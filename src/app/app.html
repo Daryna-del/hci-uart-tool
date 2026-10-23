@@ -4,7 +4,7 @@
   @if (!serial.isSupported) {
   <p class="error">Web Serial не підтримується цим браузером. Відкрийте сторінку в Chrome або Edge.</p>
   } @else if (serial.connected()) {
-  <button (click)="sendReset()">Send HCI Reset</button>
+  <button (click)="sendReset()" [disabled]="hci.busy()">Send HCI Reset</button>
   <button (click)="disconnect()">Disconnect</button>
   } @else {
   <button (click)="connect()">Connect</button>
@@ -14,6 +14,6 @@
   <p class="error">{{ error() }}</p>
   }
 
-  <pre>@for (line of log(); track $index) {{{ line }}
+  <pre>@for (line of hci.log(); track $index) {{{ line }}
 }</pre>
 </main>

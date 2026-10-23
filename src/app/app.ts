@@ -1,6 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { resetCommand } from './hci/hci-commands';
-import { toHex } from './hci/hex';
+import { HciService } from './hci.service';
 import { SerialService } from './serial.service';
 
 @Component({
@@ -10,34 +9,28 @@ import { SerialService } from './serial.service';
 })
 export class App {
   protected readonly serial = inject(SerialService);
-  protected readonly log = signal<string[]>([]);
+  protected readonly hci = inject(HciService);
   protected readonly error = signal('');
 
-  constructor() {
-    this.serial.setDataListener((chunk) => this.addLog('RX', chunk));
-  }
-
   protected async connect(): Promise<void> {
-    this.error.set('');
-    try {
-      await this.serial.connect();
-    } catch (e) {
-      this.error.set(e instanceof Error ? e.message : String(e));
-    }
+    await this.run(() => this.serial.connect());
   }
 
   protected async disconnect(): Promise<void> {
-    await this.serial.disconnect();
+    await this.run(() => this.serial.disconnect());
   }
 
   protected async sendReset(): Promise<void> {
-    const command = resetCommand();
-    this.addLog('TX', command);
-    await this.serial.write(command);
+    await this.run(() => this.hci.reset());
   }
 
-  private addLog(direction: 'TX' | 'RX', bytes: Uint8Array): void {
-    const time = new Date().toLocaleTimeString();
-    this.log.update((lines) => [...lines, `${time}  ${direction}  ${toHex(bytes)}`]);
+  // Runs an action and shows its error message instead of letting it fail silently.
+  private async run(action: () => Promise<unknown>): Promise<void> {
+    this.error.set('');
+    try {
+      await action();
+    } catch (e) {
+      this.error.set(e instanceof Error ? e.message : String(e));
+    }
   }
 }
