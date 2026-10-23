@@ -2,18 +2,50 @@
   <h1>HCI UART Tool</h1>
 
   @if (!serial.isSupported) {
-  <p class="error">Web Serial не підтримується цим браузером. Відкрийте сторінку в Chrome або Edge.</p>
-  } @else if (serial.connected()) {
-  <button (click)="sendReset()" [disabled]="hci.busy()">Send HCI Reset</button>
-  <button (click)="disconnect()">Disconnect</button>
+    <p class="error">Web Serial is not supported in this browser. Open the page in Chrome or Edge.</p>
   } @else {
-  <button (click)="connect()">Connect</button>
+    <section class="card">
+      @if (serial.connected()) {
+        <span class="status connected">● Connected</span>
+        <button (click)="disconnect()" [disabled]="hci.busy()">Disconnect</button>
+      } @else {
+        <span class="status">○ Disconnected</span>
+        <button (click)="connect()">Connect</button>
+      }
+    </section>
+
+    @if (serial.connected()) {
+      <section class="card commands">
+        <div class="row">
+          <button (click)="reset()" [disabled]="hci.busy()">HCI Reset</button>
+        </div>
+
+        <div class="row">
+          <button (click)="readBdAddr()" [disabled]="hci.busy()">Read BD_ADDR</button>
+          <output class="bd-addr">{{ bdAddr() || '—' }}</output>
+        </div>
+
+        <div class="row">
+          <input
+            #newBdAddr
+            placeholder="11:22:33:44:55:66"
+            aria-label="New BD_ADDR"
+            (keydown.enter)="writeBdAddr(newBdAddr.value)"
+          />
+          <button (click)="writeBdAddr(newBdAddr.value)" [disabled]="hci.busy()">Write BD_ADDR</button>
+        </div>
+      </section>
+    }
   }
 
   @if (error()) {
-  <p class="error">{{ error() }}</p>
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+  @if (message()) {
+    <p class="message">{{ message() }}</p>
   }
 
-  <pre>@for (line of hci.log(); track $index) {{{ line }}
+  <h2>Log</h2>
+  <pre class="log">@for (line of hci.log(); track $index) {{{ line }}
 }</pre>
 </main>
