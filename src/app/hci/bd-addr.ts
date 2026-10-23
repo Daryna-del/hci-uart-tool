@@ -1,3 +1,5 @@
+import { toHex } from './hex';
+
 const BD_ADDR_HEX = /^[0-9a-f]{12}$/i;
 
 export function parseBdAddr(text: string): Uint8Array | null {
@@ -8,8 +10,5 @@ export function parseBdAddr(text: string): Uint8Array | null {
 }
 
 export function formatBdAddr(bytesFromDevice: Uint8Array): string {
-    return [...bytesFromDevice]
-        .reverse()
-        .map((byte) => byte.toString(16).toUpperCase().padStart(2, '0'))
-        .join(':');
+    return toHex(bytesFromDevice.slice().reverse(), ':');
 }

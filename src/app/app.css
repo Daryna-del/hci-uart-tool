@@ -1,0 +1,20 @@
+main {
+    max-width: 720px;
+    margin: 32px auto;
+    padding: 0 16px;
+    font-family: system-ui, sans-serif;
+}
+
+button {
+    margin-right: 8px;
+}
+
+.error {
+    color: #c0392b;
+}
+
+pre {
+    background: #f1f1ee;
+    padding: 12px;
+    min-height: 120px;
+}
