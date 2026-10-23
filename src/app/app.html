@@ -2,7 +2,9 @@
   <h1>HCI UART Tool</h1>
 
   @if (!serial.isSupported) {
-    <p class="error">Web Serial is not supported in this browser. Open the page in Chrome or Edge.</p>
+    <p class="error">
+      Web Serial is not supported in this browser. Open the page in Chrome or Edge.
+    </p>
   } @else {
     <section class="card">
       @if (serial.connected()) {
@@ -32,7 +34,9 @@
             aria-label="New BD_ADDR"
             (keydown.enter)="writeBdAddr(newBdAddr.value)"
           />
-          <button (click)="writeBdAddr(newBdAddr.value)" [disabled]="hci.busy()">Write BD_ADDR</button>
+          <button (click)="writeBdAddr(newBdAddr.value)" [disabled]="hci.busy()">
+            Write BD_ADDR
+          </button>
         </div>
       </section>
     }

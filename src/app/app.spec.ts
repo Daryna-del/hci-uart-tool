@@ -35,7 +35,9 @@ describe('App', () => {
 
   // Clicks a button by its label and waits until the async handler has updated the page.
   async function click(label: string): Promise<void> {
-    const button = [...page.querySelectorAll('button')].find((b) => b.textContent?.trim() === label);
+    const button = [...page.querySelectorAll('button')].find(
+      (b) => b.textContent?.trim() === label,
+    );
     button!.click();
     await new Promise((resolve) => setTimeout(resolve));
     await fixture.whenStable();
@@ -70,7 +72,9 @@ describe('App', () => {
 
     await click('Write BD_ADDR');
 
-    expect(hci.writeBdAddr).toHaveBeenCalledWith(new Uint8Array([0x11, 0x22, 0x33, 0x44, 0x55, 0x66]));
+    expect(hci.writeBdAddr).toHaveBeenCalledWith(
+      new Uint8Array([0x11, 0x22, 0x33, 0x44, 0x55, 0x66]),
+    );
     expect(page.querySelector('.bd-addr')?.textContent).toBe('11:22:33:44:55:66');
   });
 

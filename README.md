@@ -1,5 +1,7 @@
 # HCI UART Tool
 
+[![CI](https://github.com/Daryna-del/hci-uart-tool/actions/workflows/ci.yml/badge.svg)](https://github.com/Daryna-del/hci-uart-tool/actions/workflows/ci.yml)
+
 A small web app that talks to a Bluetooth® evaluation kit (e.g. CYBT-353027-EVAL) over UART using HCI commands:
 
 - **HCI Reset**, waiting for its Command Complete event
@@ -81,6 +83,8 @@ hci/ (pure functions, no Angular)
 ### Tests
 
 44 unit tests. Most expectations are taken directly from the example log in the task: command bytes, responses, the BD_ADDR read back after a write, and the log format. They also cover responses split across chunks, garbage bytes, non-zero status, timeouts and invalid input. `SerialService` is a thin wrapper over the browser API and was checked manually on a real CYBT-353027-EVAL.
+
+CI ([GitHub Actions](.github/workflows/ci.yml)) installs dependencies, runs the tests and builds the app on **Windows, Ubuntu and macOS** on every push.
 
 ## Example session
 
