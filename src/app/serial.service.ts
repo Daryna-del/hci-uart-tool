@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-const BAUD_RATE = 115200;
+export const BAUD_RATE = 115200;
 const FLOW_CONTROL: FlowControlType = 'hardware';
 
 @Injectable({ providedIn: 'root' })

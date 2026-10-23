@@ -6,7 +6,7 @@ describe('HciEventParser', () => {
     it('parses the Reset response from the task log', () => {
         const events = new HciEventParser().push(bytes(0x04, 0x0e, 0x04, 0x01, 0x03, 0x0c, 0x00));
 
-        expect(events).toEqual([{ opcode: 0x0c03, status: 0x00, params: bytes() }]);
+        expect(events).toEqual([{ numCommandPackets: 1, opcode: 0x0c03, status: 0x00, params: bytes() }]);
     });
 
     it('parses the Read BD_ADDR response from the task log', () => {
@@ -15,7 +15,7 @@ describe('HciEventParser', () => {
         );
 
         expect(events).toEqual([
-            { opcode: 0x1009, status: 0x00, params: bytes(0xe0, 0x5b, 0x20, 0x6a, 0x70, 0x20) },
+            { numCommandPackets: 1, opcode: 0x1009, status: 0x00, params: bytes(0xe0, 0x5b, 0x20, 0x6a, 0x70, 0x20) },
         ]);
     });
 
@@ -24,7 +24,7 @@ describe('HciEventParser', () => {
 
         expect(parser.push(bytes(0x04, 0x0e))).toEqual([]);
         expect(parser.push(bytes(0x04, 0x01, 0x03, 0x0c, 0x00))).toEqual([
-            { opcode: 0x0c03, status: 0x00, params: bytes() },
+            { numCommandPackets: 1, opcode: 0x0c03, status: 0x00, params: bytes() },
         ]);
     });
 
@@ -39,7 +39,7 @@ describe('HciEventParser', () => {
     it('skips garbage before a packet', () => {
         const events = new HciEventParser().push(bytes(0xff, 0x00, 0x04, 0x0e, 0x04, 0x01, 0x03, 0x0c, 0x00));
 
-        expect(events).toEqual([{ opcode: 0x0c03, status: 0x00, params: bytes() }]);
+        expect(events).toEqual([{ numCommandPackets: 1, opcode: 0x0c03, status: 0x00, params: bytes() }]);
     });
 
     it('ignores events other than Command Complete', () => {

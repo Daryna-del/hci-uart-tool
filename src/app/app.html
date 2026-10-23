@@ -46,6 +46,7 @@
   }
 
   <h2>Log</h2>
-  <pre class="log">@for (line of hci.log(); track $index) {{{ line }}
+  <pre class="log">@for (entry of hci.log(); track $index) {{{ entry }}
+
 }</pre>
 </main>

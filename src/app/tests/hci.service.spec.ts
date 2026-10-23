@@ -83,12 +83,12 @@ describe('HciService', () => {
         await firstResult;
     });
 
-    it('logs sent and received bytes', async () => {
+    it('logs the command and its response in the task log format', async () => {
         serial.reply = bytes(0x04, 0x0e, 0x04, 0x01, 0x03, 0x0c, 0x00);
 
         await hci.reset();
 
-        expect(hci.log()[0]).toContain('TX  01 03 0C 00');
-        expect(hci.log()[1]).toContain('RX  04 0E 04 01 03 0C 00');
+        expect(hci.log()[0]).toContain('c> Reset\nHCI Command\n[03 0C 00]');
+        expect(hci.log()[1]).toContain('<c Reset\nHCI Command Complete Event\n[0E 04]: 01 03 0C 00');
     });
 });

@@ -1,12 +1,14 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { formatBdAddr } from './hci/bd-addr';
 import { readBdAddrCommand, resetCommand, writeBdAddrCommand } from './hci/hci-commands';
+import { commandName, describeCommand, describeCommandComplete, formatTimestamp } from './hci/hci-log';
 import { CommandComplete, HciEventParser } from './hci/hci-parser';
 import { toHex } from './hci/hex';
-import { SerialService } from './serial.service';
+import { BAUD_RATE, SerialService } from './serial.service';
 
 const RESPONSE_TIMEOUT_MS = 2000;
 const STATUS_SUCCESS = 0x00;
+const PORT_LABEL = `UART@${BAUD_RATE}`;
 
 // Sends one HCI command at a time and waits for its Command Complete event.
 @Injectable({ providedIn: 'root' })
@@ -46,7 +48,7 @@ export class HciService {
                 this.pending = { opcode, resolve };
                 timer = setTimeout(() => reject(new Error('Device did not respond in time')), RESPONSE_TIMEOUT_MS);
             });
-            this.addLog('TX', command);
+            this.addLog('c>', opcode, describeCommand(command));
             const [, event] = await Promise.all([this.serial.write(command), response]);
 
             if (event.status !== STATUS_SUCCESS) {
@@ -61,14 +63,15 @@ export class HciService {
     }
 
     private onData(chunk: Uint8Array): void {
-        this.addLog('RX', chunk);
         for (const event of this.parser.push(chunk)) {
+            this.addLog('<c', event.opcode, describeCommandComplete(event));
             if (event.opcode === this.pending?.opcode) this.pending.resolve(event);
         }
     }
 
-    private addLog(direction: 'TX' | 'RX', bytes: Uint8Array): void {
-        const time = new Date().toLocaleTimeString();
-        this.log.update((lines) => [...lines, `${time}  ${direction}  ${toHex(bytes)}`]);
+    // One entry per packet, e.g. "10/23/26 23:43:41.702 UART@115200 c> Reset" followed by the decoded fields.
+    private addLog(direction: 'c>' | '<c', opcode: number, details: string[]): void {
+        const header = `${formatTimestamp(new Date())} ${PORT_LABEL} ${direction} ${commandName(opcode)}`;
+        this.log.update((entries) => [...entries, [header, ...details].join('\n')]);
     }
 }

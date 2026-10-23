@@ -3,6 +3,7 @@ const COMMAND_COMPLETE_EVENT = 0x0e;
 const HEADER_LENGTH = 3;
 
 export interface CommandComplete {
+    numCommandPackets: number;
     opcode: number;
     status: number;
     params: Uint8Array;
@@ -28,6 +29,7 @@ export class HciEventParser {
             const packet = this.buffer.splice(0, packetLength);
             if (packet[1] === COMMAND_COMPLETE_EVENT) {
                 events.push({
+                    numCommandPackets: packet[3],
                     opcode: packet[4] | (packet[5] << 8),
                     status: packet[6],
                     params: new Uint8Array(packet.slice(7)),
